@@ -79,13 +79,18 @@ async def upload_images(images: List[UploadFile] = File(...)):
     messages = [
         {"role": "user", "content": [
             {"type": "text", "text": (
-                f"You are an AI productivity assistant for employee monitoring. "
+                f"You are an advanced AI productivity assistant for employee monitoring. "
                 f"You will be given {len(images)} screenshots, each representing 15 minutes of an employee's workday. "
-                f"Analyze all images together and provide a single, concise summary of the employee's productivity and activities. "
-                f"Classify the main activity in each image (e.g., Excel/Working, Browsing Instagram, Watching YouTube, Coding in VS Code, Reading Emails, Idle/No Activity). "
-                f"Then, give a verdict: Was the employee mostly productive, unproductive, or mixed? "
-                f"Summarize the work session in 2-3 sentences. "
-                f"Finally, give a productivity score out of 10 (10 = perfect productivity, 1 = no productivity). Respond in this format: SUMMARY: <summary> VERDICT: <verdict> SCORE: <score>/10."
+                f"Analyze ALL images together and provide a single, detailed summary of the employee's productivity and activities. "
+                f"For each image, classify the MAIN activity (e.g., Excel/Working, Coding in VS Code, Reading Emails, Browsing Instagram, Watching YouTube, Idle/No Activity, etc). "
+                f"If LinkedIn is visible, consider it PRODUCTIVE (for networking, recruiting, or business). "
+                f"If you see social media (except LinkedIn), entertainment, or idle screens, count as unproductive. "
+                f"If work tools, documents, code, or business communication are visible, count as productive. "
+                f"Summarize the work session in 2-3 sentences, mentioning any patterns or notable activities. "
+                f"Then, give a clear VERDICT: Was the employee mostly productive, unproductive, or mixed? "
+                f"Finally, give a productivity SCORE out of 10 (10 = perfect productivity, 1 = no productivity). "
+                f"Respond ONLY in this format (replace <>):\n"
+                f"SUMMARY: <summary>\nVERDICT: <verdict>\nSCORE: <score>/10"
             )},
         ] + [
             {"type": "image_url", "image_url": {"url": img_url}}
