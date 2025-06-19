@@ -60,7 +60,7 @@ function App() {
     const formData = new FormData();
     images.forEach((img, idx) => formData.append('images', img));
     try {
-      const res = await fetch('http://localhost:8000/upload', {
+      const res = await fetch('https://productivity-checker-3.onrender.com', {
         method: 'POST',
         body: formData,
       });
