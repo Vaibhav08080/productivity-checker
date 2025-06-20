@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi import FastAPI, File, UploadFile, HTTPException, Form
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 import openai
@@ -43,26 +43,35 @@ def upload_to_supabase_storage(file: UploadFile, content: bytes) -> str:
     public_url = f"{SUPABASE_URL}/storage/v1/object/public/{SUPABASE_BUCKET}/{filename}"
     return public_url
 
-# Helper to insert metadata into Supabase DB
-def insert_metadata(filename: str, image_url: str, openai_response: str):
+# Helper to insert session metadata into Supabase DB
+def insert_session_metadata(employee_name: str, employee_pfp: str, date: str, summary: str, verdict: str, score: int, image_urls: list):
     headers = {
         "apikey": SUPABASE_SERVICE_ROLE_KEY,
         "Authorization": f"Bearer {SUPABASE_SERVICE_ROLE_KEY}",
         "Content-Type": "application/json"
     }
     data = {
-        "filename": filename,
-        "image_url": image_url,
-        "openai_response": openai_response
+        "employee_name": employee_name,
+        "employee_pfp": employee_pfp,
+        "date": date,
+        "summary": summary,
+        "verdict": verdict,
+        "score": score,
+        "image_urls": image_urls
     }
-    table_url = f"{SUPABASE_URL}/rest/v1/images"
+    table_url = f"{SUPABASE_URL}/rest/v1/employee_sessions"
     res = requests.post(table_url, headers=headers, json=data)
     if res.status_code not in (200, 201):
-        logging.error(f"Failed to insert metadata: {res.text}")
-        raise HTTPException(status_code=500, detail=f"Failed to insert metadata: {res.text}")
+        logging.error(f"Failed to insert session metadata: {res.text}")
+        raise HTTPException(status_code=500, detail=f"Failed to insert session metadata: {res.text}")
 
 @app.post("/upload")
-async def upload_images(images: List[UploadFile] = File(...)):
+async def upload_images(
+    images: List[UploadFile] = File(...),
+    employee_name: str = Form(...),
+    employee_pfp: str = Form(...),  # URL to profile picture
+    date: str = Form(...)
+):
     if len(images) == 0 or len(images) > 18:
         raise HTTPException(status_code=400, detail="Please upload between 1 and 18 images.")
     image_urls = []
@@ -104,14 +113,27 @@ async def upload_images(images: List[UploadFile] = File(...)):
             max_tokens=800
         )
         summary = response.choices[0].message.content
-        # Try to extract score from the response
         import re
+        verdict_match = re.search(r'VERDICT:\s*(.+?)\n', summary)
+        verdict = verdict_match.group(1).strip() if verdict_match else None
         score_match = re.search(r'SCORE:\s*(\d{1,2})/10', summary)
-        score = score_match.group(1) if score_match else None
+        score = int(score_match.group(1)) if score_match else None
     except Exception as e:
         logging.error(f"OpenAI API error: {e}")
         raise HTTPException(status_code=500, detail=f"OpenAI API error: {e}")
-    # Save each image's metadata and the summary
-    for i in range(len(images)):
-        insert_metadata(filenames[i], image_urls[i], summary)
-    return {"summary": summary, "score": score, "image_urls": image_urls}
+    # Save session metadata (one row per session)
+    insert_session_metadata(employee_name, employee_pfp, date, summary, verdict, score, image_urls)
+    return {"summary": summary, "verdict": verdict, "score": score, "image_urls": image_urls}
+
+@app.get("/sessions")
+def get_sessions():
+    headers = {
+        "apikey": SUPABASE_SERVICE_ROLE_KEY,
+        "Authorization": f"Bearer {SUPABASE_SERVICE_ROLE_KEY}",
+        "Content-Type": "application/json"
+    }
+    table_url = f"{SUPABASE_URL}/rest/v1/employee_sessions?select=*"
+    res = requests.get(table_url, headers=headers)
+    if res.status_code in (200, 201):
+        return res.json()
+    return []

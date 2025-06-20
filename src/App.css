@@ -202,3 +202,64 @@ nav a:hover {
 #root, .logo, .card, .read-the-docs {
   all: unset;
 }
+.employee-form {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+  padding: 2rem 2.5rem 1.5rem 2.5rem;
+  margin-bottom: 2rem;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.employee-form h2 {
+  color: #6a82fb;
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 1.2rem;
+}
+.employee-input {
+  width: 100%;
+  max-width: 320px;
+  padding: 0.7rem 1rem;
+  margin-bottom: 0.7rem;
+  border: 1.5px solid #b2e0e7;
+  border-radius: 8px;
+  font-size: 1.08rem;
+  color: #222;
+  background: #fafdff;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.employee-input:focus {
+  border-color: #6a82fb;
+}
+.employee-input::placeholder {
+  color: #6a82fb;
+  opacity: 1;
+  font-weight: 500;
+}
+.summary-card, .summary-card * {
+  color: #222 !important;
+}
+.profile-name {
+  color: #6a82fb !important;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+.profile-count {
+  color: #888 !important;
+  font-size: 13px;
+}
+.profile-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 32px;
+  margin-bottom: 12px;
+  object-fit: cover;
+  background: #f3f6ff;
+  display: block;
+}
