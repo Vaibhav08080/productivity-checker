@@ -14,7 +14,7 @@ function SummaryPage({ onBack }) {
     const fetchProfiles = async () => {
       setLoading(true);
       try {
-        const res = await fetch('http://localhost:8000/sessions');
+        const res = await fetch('https://productivity-checker-3.onrender.com/sessions');
         const data = await res.json();
         if (Array.isArray(data)) {
           // Group by employee_name
