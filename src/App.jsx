@@ -61,7 +61,8 @@ function App() {
 
   // Upload profile picture to Supabase Storage
   const uploadPfpToSupabase = async file => {
-    const SUPABASE_UPLOAD_URL = `https://${SUPABASE_PROJECT_REF}.supabase.co/storage/v1/object/${BUCKET}/` + encodeURIComponent(Date.now() + '_' + file.name);
+    const filename = Date.now() + '_' + file.name;
+    const SUPABASE_UPLOAD_URL = `https://${SUPABASE_PROJECT_REF}.supabase.co/storage/v1/object/${BUCKET}/` + encodeURIComponent(filename);
     const res = await fetch(SUPABASE_UPLOAD_URL, {
       method: 'POST',
       headers: {
@@ -73,7 +74,7 @@ function App() {
     });
     if (res.ok) {
       // Construct public URL for the uploaded file
-      return `https://${SUPABASE_PROJECT_REF}.supabase.co/storage/v1/object/public/${BUCKET}/` + encodeURIComponent(Date.now() + '_' + file.name);
+      return `https://${SUPABASE_PROJECT_REF}.supabase.co/storage/v1/object/public/${BUCKET}/` + encodeURIComponent(filename);
     } else {
       throw new Error('Failed to upload profile picture');
     }
@@ -170,17 +171,20 @@ function App() {
             onChange={e => setEmployeeName(e.target.value)}
             className="employee-input"
           />
+          <label style={{marginBottom: 4, color: '#333', fontWeight: 500}}>Select your profile picture</label>
           <input
             type="file"
             accept="image/*"
             ref={pfpInputRef}
             onChange={handlePfpChange}
             className="employee-input"
+            style={{marginBottom: 8}}
           />
-          {employeePfpUrl && <img src={employeePfpUrl} alt="pfp" style={{width: 48, height: 48, borderRadius: 24, marginBottom: 10}} />}
+          {employeePfpUrl && <img src={employeePfpUrl} alt="pfp" style={{width: 48, height: 48, borderRadius: 24, margin: '8px auto 10px auto', display: 'block'}} />}
+          <label style={{marginBottom: 4, color: '#333', fontWeight: 500}}>Add today's date</label>
           <input
             type="date"
-            value={date}
+            value={date || new Date().toISOString().split('T')[0]}
             onChange={e => setDate(e.target.value)}
             className="employee-input"
           />
@@ -221,7 +225,7 @@ function App() {
         </button>
         {loading && <div className="toast">Generating summary, please wait...</div>}
         {summary && (
-          <div className="summary-card">
+          <div className="summary-card" style={{margin: '24px auto', float: 'none'}}>
             <h2>AI Productivity Summary</h2>
             <pre style={{whiteSpace: 'pre-wrap', textAlign: 'left'}}>{summary}</pre>
             {typeof summary === 'string' && summary.match(/SCORE: (\d{1,2})\/10/) && (

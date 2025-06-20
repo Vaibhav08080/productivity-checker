@@ -59,9 +59,14 @@ function SummaryPage({ onBack }) {
         <div style={{display: 'flex', justifyContent: 'center', marginTop: 24}}>
           <button className="upload-btn2" style={{maxWidth: 180, margin: 24}} onClick={() => setSelectedProfile(null)}>Back to Profiles</button>
         </div>
-        <div className="center-content">
+        <div className="center-content" style={{display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%'}}>
           <div style={{display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24, justifyContent: 'center'}}>
-            <img src={selectedProfile.pfp && selectedProfile.pfp.startsWith('http') ? selectedProfile.pfp : '/default-avatar.png'} alt="pfp" className="profile-avatar" />
+            <img 
+              src={selectedProfile.pfp && selectedProfile.pfp.startsWith('http') ? selectedProfile.pfp : '/default-avatar.png'} 
+              alt="pfp" 
+              className="profile-avatar" 
+              onError={e => { e.target.onerror = null; e.target.src = '/default-avatar.png'; }}
+            />
             <h2 className="profile-name" style={{margin: 0}}>{selectedProfile.name}</h2>
           </div>
           <h3 style={{marginBottom: 16, color: '#6a82fb', fontWeight: 700}}>Summaries by Date</h3>
@@ -71,9 +76,9 @@ function SummaryPage({ onBack }) {
           </div>
           <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 32, width: '100%'}}>
             {filteredSummaries.map((s, idx) => (
-              <div key={idx} className="summary-card" style={{marginBottom: 24, width: '100%', maxWidth: 600}}>
-                <div style={{fontWeight: 600, color: '#6a82fb', marginBottom: 8}}>{s.date}</div>
-                <pre style={{whiteSpace: 'pre-wrap', textAlign: 'left'}}>{s.summary}</pre>
+              <div key={idx} className="summary-card" style={{marginBottom: 24, width: '100%', maxWidth: 600, marginLeft: 'auto', marginRight: 'auto', float: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                <div style={{fontWeight: 600, color: '#6a82fb', marginBottom: 8, textAlign: 'center', width: '100%'}}>{s.date}</div>
+                <pre style={{whiteSpace: 'pre-wrap', textAlign: 'center', width: '100%'}}>{s.summary}</pre>
                 {s.score && (
                   <div className="score-box">
                     <span>Productivity Score: </span>
@@ -99,7 +104,12 @@ function SummaryPage({ onBack }) {
         <div style={{display: 'flex', flexWrap: 'wrap', gap: 32, justifyContent: 'center'}}>
           {profiles.map((profile, idx) => (
             <div key={idx} className="summary-card" style={{alignItems: 'center', cursor: 'pointer', maxWidth: 220, textAlign: 'center', padding: 24, minHeight: 180, display: 'flex', flexDirection: 'column', justifyContent: 'center'}} onClick={() => handleProfileClick(profile)}>
-              <img src={profile.pfp && profile.pfp.startsWith('http') ? profile.pfp : '/default-avatar.png'} alt="pfp" className="profile-avatar" />
+              <img 
+                src={profile.pfp && profile.pfp.startsWith('http') ? profile.pfp : '/default-avatar.png'} 
+                alt="pfp" 
+                className="profile-avatar" 
+                onError={e => { e.target.onerror = null; e.target.src = '/default-avatar.png'; }}
+              />
               <div className="profile-name">{profile.name}</div>
               <div className="profile-count">{profile.sessions.length} summaries</div>
             </div>
