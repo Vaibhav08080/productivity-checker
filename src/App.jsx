@@ -124,7 +124,7 @@ function App() {
     formData.append('employee_pfp', pfpUrl);
     formData.append('date', date);
     try {
-      const res = await fetch('https://productivity-checker-3.onrender.com', {
+      const res = await fetch('https://productivity-checker-3.onrender.com/upload', {
         method: 'POST',
         body: formData,
       });
